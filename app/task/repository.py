@@ -6,8 +6,11 @@ class TaskRepository:
     def __init__(self, db: Connection):
         self.db = db
 
-    def findAll(self):
-        cursor = self.db.execute("SELECT id,title,description,completed FROM task")
+    def findAll(self, page_size: int = 10, offset: int = 0):
+        cursor = self.db.execute(
+            "SELECT id,title,description,completed FROM task LIMIT ? OFFSET ?",
+            (page_size, offset),
+        )
         rows = cursor.fetchall()
         return [
             {

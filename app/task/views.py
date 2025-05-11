@@ -1,7 +1,5 @@
 from sqlite3 import IntegrityError
-from flask import request
-
-from flask import Blueprint
+from flask import request, Blueprint
 
 from app.db import get_db
 from app.task.repository import TaskRepository
@@ -12,11 +10,20 @@ bp = Blueprint("task", __name__, url_prefix="/task")
 
 @bp.get("/")
 def list_tasks():
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("page_size", 10))
+    offset = (page - 1) * page_size
     db = get_db()
     repo = TaskRepository(db)
-    tasks = repo.findAll()
+    tasks = repo.findAll(page_size, offset)
+    total_count = db.execute("SELECT COUNT(*) FROM task").fetchone()[0]
     db.close()
-    return tasks
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total": total_count,
+        "results": tasks,
+    }
 
 
 @bp.post("/")
@@ -34,8 +41,6 @@ def create_task():
         return created_task
     except KeyError as err:
         return f"{err} is required", 400
-    except IntegrityError:
-        return "task already exists", 400
 
 
 @bp.put("/<int:task_id>")

@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  back:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: bc-verity
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+    restart: always
+    networks:
+      - verity
+
+networks:
+  verity:

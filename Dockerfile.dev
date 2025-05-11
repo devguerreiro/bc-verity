@@ -1,0 +1,17 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN pip install poetry poetry-plugin-export
+
+COPY pyproject.toml /app
+RUN poetry export -o requirements.txt --with=dev --without-hashes && pip install -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["flask", "run", "--host=0.0.0.0"]

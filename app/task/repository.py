@@ -22,12 +22,8 @@ class TaskRepository:
     def create(self, title: str, description: Optional[str]):
         cursor = self.db.cursor()
         cursor.execute(
-            "INSERT INTO task (title, description, completed) VALUES (?,?,?)",
-            (
-                title,
-                description,
-                0,
-            ),
+            "INSERT INTO task (title, description) VALUES (?,?)",
+            (title, description),
         )
         self.db.commit()
         return {

@@ -40,5 +40,7 @@ sqlite3.register_converter("timestamp", lambda v: datetime.fromisoformat(v.decod
 
 
 def init_app(app):
+    with app.app_context():
+        init_db()
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
